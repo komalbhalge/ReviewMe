@@ -23,12 +23,38 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions 'environment'
+
+    productFlavors {
+        /*
+        [LOCAL] Configuration
+         */
+        local {
+            Properties props = new Properties()
+            def propertiesFile = project.rootProject.file('dev.properties')
+            if (propertiesFile.exists()) {
+                props.load(propertiesFile.newDataInputStream())
+            }
+
+            dimension "environment"
+            applicationIdSuffix props.getProperty("app.applicationIdSuffix")
+            resValue("string", "app_name", props.getProperty("app.name", "BIZNEXT-ERR"))
+            buildConfigField "String", "BASE_API_URL", "\"${props.getProperty("app.baseApiUrl", "")}\""
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    testOptions {
+        unitTests {
+            includeAndroidResources true
+            returnDefaultValues true
+        }
     }
 }
 
@@ -41,7 +67,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.3.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1'
-    testImplementation 'junit:junit:4.+'
+    testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 }
